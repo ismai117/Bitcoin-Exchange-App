@@ -29,7 +29,7 @@ This application allows you to monitor the bitcoin rate in the following currenc
 
 ### How to Install and Run the Project
 
-- Step 1: Open your Android Studio then go to the File > New > Project from Version Control as shown in the below image. 
+- Step 1: Open your Android Studio then go to the File > New > Project from Version Control.
 
 - Step 2: After clicking on the Project from Version Control a pop-up screen will arise like below. In the Version control choose Git from the drop-down menu. 
 
