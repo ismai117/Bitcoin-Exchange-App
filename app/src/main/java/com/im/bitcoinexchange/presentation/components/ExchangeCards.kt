@@ -31,11 +31,12 @@ fun ExchangeCard(
     val textFromHtmlFormat = HtmlCompat.fromHtml(symbols, HtmlCompat.FROM_HTML_MODE_LEGACY)
     val symbol = textFromHtmlFormat
 
-    val roundNumber = Math.round( rate / 10.0 ) * 10
+
+    val roundedNumber = Math.round(rate / 0.10) * 0.10
 
     val nf: NumberFormat = DecimalFormat("#,###.00")
 
-    val number = nf.format(roundNumber)
+    val number = nf.format(roundedNumber)
 
     Card(
         shape = RoundedCornerShape(20.dp),

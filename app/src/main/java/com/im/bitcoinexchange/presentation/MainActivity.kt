@@ -26,6 +26,8 @@ import com.im.bitcoinexchange.presentation.viewmodel.ExchangeViewModel
 import com.im.bitcoinexchange.util.NetworkState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -52,37 +54,44 @@ class MainActivity : ComponentActivity() {
         val exchanges = exchangeModel.exchanges.value
         val updated = remember { mutableStateOf("") }
 
-        Column(
-            modifier = Modifier.fillMaxSize()
+        val scaffoldState = rememberScaffoldState()
+
+        Scaffold(
+            scaffoldState = scaffoldState
         ) {
 
-            Header(exchangeModel, updated.value)
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
 
-            exchanges?.let { result ->
+                Header(exchangeModel, updated.value, scaffoldState = scaffoldState)
 
-                when (result) {
+                exchanges?.let { result ->
 
-                    is NetworkState.Success -> {
+                    when (result) {
 
-                        result.data?.forEach {
-                            Layout(exchanges = it)
-                            updated.value = it.updated
+                        is NetworkState.Success -> {
+
+                            result.data?.forEach {
+                                Layout(exchanges = it)
+                                updated.value = it.updated
+                            }
+
                         }
 
-                    }
+                        is NetworkState.Error -> {
+                            Toast.makeText(this@MainActivity, "${result.error}", Toast.LENGTH_LONG)
+                                .show()
+                        }
 
-                    is NetworkState.Error -> {
-                        Toast.makeText(this@MainActivity, "${result.error}", Toast.LENGTH_LONG)
-                            .show()
+
                     }
 
 
                 }
-
-
             }
-        }
 
+        }
 
     }
 
@@ -126,8 +135,14 @@ class MainActivity : ComponentActivity() {
 
 
     @Composable
-    fun Header(exchangeModel: ExchangeViewModel, value: String) {
+    fun Header(
+        exchangeModel: ExchangeViewModel,
+        value: String,
+        scaffoldState: ScaffoldState
+    ) {
 
+        val scope = rememberCoroutineScope()
+        val isSelected = remember { mutableStateOf(false) }
 
         Card(
             shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
@@ -187,32 +202,40 @@ class MainActivity : ComponentActivity() {
 
                     Button(
                         onClick = {
+                            isSelected.value = true
                             exchangeModel.startRunning()
+                            scope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar("Started Running")
+                            }
                         },
+                        shape = RoundedCornerShape(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(color = 0xFF400080)),
                         modifier = Modifier
                             .width(130.dp)
                             .height(55.dp),
-                        shape = RoundedCornerShape(50.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF400080))
                     ) {
                         Text(
                             text = "Start",
                             style = TextStyle(
                                 fontSize = 20.sp,
-                                color = Color.White
+                                color = Color(0xFFCBC3E3)
                             )
                         )
                     }
 
                     Button(
                         onClick = {
+                            isSelected.value = false
                             exchangeModel.stopRunning()
+                            scope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar("Stopped Running")
+                            }
                         },
+                        shape = RoundedCornerShape(50.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(color = 0xFFCBC3E3)),
                         modifier = Modifier
                             .width(130.dp)
                             .height(55.dp),
-                        shape = RoundedCornerShape(50.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFCBC3E3))
                     ) {
                         Text(
                             text = "Stop",
