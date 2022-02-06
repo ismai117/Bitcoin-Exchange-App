@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -138,7 +139,7 @@ class MainActivity : ComponentActivity() {
     fun Header(
         exchangeModel: ExchangeViewModel,
         value: String,
-        scaffoldState: ScaffoldState
+        scaffoldState: ScaffoldState,
     ) {
 
         val scope = rememberCoroutineScope()
@@ -155,7 +156,7 @@ class MainActivity : ComponentActivity() {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(260.dp)
+                    .height(270.dp)
             ) {
 
                 Column(
@@ -195,7 +196,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxWidth(0.76f)
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 20.dp),
+                        .padding(bottom = 30.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -210,9 +211,14 @@ class MainActivity : ComponentActivity() {
                         },
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(color = 0xFF400080)),
-                        modifier = Modifier
-                            .width(130.dp)
-                            .height(55.dp),
+                        modifier =
+                        if (isSelected.value)
+                            Modifier
+                                .width(130.dp)
+                                .height(55.dp)
+                        else Modifier
+                            .width(135.dp)
+                            .height(60.dp)
                     ) {
                         Text(
                             text = "Start",
@@ -233,9 +239,14 @@ class MainActivity : ComponentActivity() {
                         },
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(backgroundColor = Color(color = 0xFFCBC3E3)),
-                        modifier = Modifier
-                            .width(130.dp)
-                            .height(55.dp),
+                        modifier =
+                        if (!isSelected.value)
+                            Modifier
+                                .width(130.dp)
+                                .height(55.dp)
+                        else Modifier
+                            .width(135.dp)
+                            .height(60.dp)
                     ) {
                         Text(
                             text = "Stop",
